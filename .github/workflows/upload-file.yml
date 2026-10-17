@@ -1,0 +1,45 @@
+name: Upload file to repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: 'Path in repo'
+        required: true
+        default: 'generated/file.txt'
+      content:
+        description: 'File content'
+        required: true
+
+jobs:
+  write-file:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure directory exists
+        run: |
+          mkdir -p "$(dirname "${{ github.event.inputs.path }}")"
+
+      - name: Write file
+        run: |
+          printf '%s\n' "${{ github.event.inputs.content }}" > "${{ github.event.inputs.path }}"
+
+      - name: Commit and push
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          git config user.name "$GIT_AUTHOR_NAME"
+          git config user.email "$GIT_AUTHOR_EMAIL"
+          git add "${{ github.event.inputs.path }}"
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Upload file via workflow"
+          git push
