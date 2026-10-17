@@ -1,1 +1,69 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ШИНHUB — Череповец</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f8f5;color:#17251d;font:16px Arial,sans-serif}
+header{background:white;padding:20px;font-size:25px;font-weight:bold}
+header span{background:#e3ff73;padding:4px;border-radius:6px}
+main{max-width:850px;margin:auto;padding:24px 16px}
+h1{font-size:42px;line-height:1.05}
+input{width:100%;padding:15px;border:1px solid #ddd;border-radius:12px;font-size:16px}
+button{padding:12px 16px;border:0;border-radius:10px;background:#14794b;color:white;font-weight:bold;margin:8px 5px 8px 0}
+.card{background:white;border:1px solid #e0e7e1;border-radius:15px;padding:18px;margin:12px 0}
+.card h2{margin:0 0 8px;font-size:20px}
+p{color:#66746b;line-height:1.5}
+a{color:#14794b;font-weight:bold;margin-right:12px}
+.note{background:#fff6df;padding:14px;border-radius:12px;font-size:13px}
+</style>
+</head>
+<body>
+<header>ШИН<span>HUB</span></header>
+<main>
+<p>ШИНОМОНТАЖ РЯДОМ · ЧЕРЕПОВЕЦ</p>
+<h1>Найди свой<br>шиномонтаж.</h1>
+<p>Выбирай удобную точку, уточняй график и строй маршрут.</p>
+<input id="q" placeholder="Название или адрес шиномонтажа">
+<div>
+<button onclick="render()">Найти</button>
+<button onclick="filterLate()">Работают допоздна</button>
+<button onclick="showAll()">Все точки</button>
+</div>
+<div id="list"></div>
+<p class="note">Каталог для тестирования. Уточняй цены, адреса и график перед поездкой. Онлайн-запись пока не подключена.</p>
+</main>
+<script>
+const shops=[
+["ИнтерШина","Октябрьский проспект, 38Б","+7 (8202) 32-33-81","09:00–20:00",true],
+["5 колесо","Улица Чкалова, 31 к2","Телефон уточняется","График уточняется",false],
+["ХотШин","Проспект Победы, 135Б","+7 (911) 505-71-07","По звонку",true],
+["Шинсервис","Проспект Победы, 85Е, стр. 1","+7 (8202) 25-31-83","До 21:00 в будни",true],
+["Мотор-Авто","Кирилловское шоссе, 47, стр. 1","+7 (911) 047-76-27","09:00–18:00",false],
+["Автоматика35","Северное шоссе, 6и","Телефон уточняется","С 09:00, уточнить",false],
+["Шиномонтаж на Пионерской","Северное шоссе, 41/1","Телефон уточняется","График уточняется",false],
+["Шиномонтажная мастерская","Улица Леднева, 23 к1","Телефон уточняется","График уточняется",false]
+];
+let lateOnly=false;
+function render(){
+const q=document.getElementById('q').value.toLowerCase();
+const found=shops.filter(s=>(s[0]+' '+s[1]).toLowerCase().includes(q)&&(!lateOnly||s[4]));
+document.getElementById('list').innerHTML=found.length?found.map(s=>`
+<div class="card">
+<h2>${s[0]}</h2>
+<p>📍 ${s[1]}</p>
+<p>🕒 ${s[3]}</p>
+<p>☎ ${s[2]}</p>
+<a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s[1]+', Череповец')}">Маршрут ↗</a>
+${s[2].startsWith('+')?`<a href="tel:${s[2].replace(/[^+0-9]/g,'')}">Позвонить</a>`:''}
+</div>`).join(''):'<p>Ничего не найдено.</p>';
+}
+function filterLate(){lateOnly=true;render()}
+function showAll(){lateOnly=false;document.getElementById('q').value='';render()}
+document.getElementById('q').addEventListener('input',render);
+render();
+</script>
+</body>
+</html>
